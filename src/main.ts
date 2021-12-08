@@ -1,8 +1,8 @@
-import './style.css'
+import {GameController} from './GameController'
 
-const app = document.querySelector<HTMLDivElement>('#app')!
+window.onload = init;
+let gc;
 
-app.innerHTML = `
-  <h1>Hello Vite!</h1>
-  <a href="https://vitejs.dev/guide/features.html" target="_blank">Documentation</a>
-`
+function init() {
+    gc = new GameController();
+}
