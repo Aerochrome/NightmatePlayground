@@ -27,19 +27,39 @@ export class LoopController {
         this.userInputController = new UserInputController(this);
   
         this.initThree()
+        this.createFloor()
+        this.createLight()
         this.initGameLoop()
     }
 
     initThree() {
-        //this.canvasElement = <HTMLCanvasElement> document.getElementById('maingame')
-        //this.canvasContext = this.canvasElement.getContext('2d')
-
         this.scene = new THREE.Scene()
         this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000)
 
         this.renderer = new THREE.WebGLRenderer()
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(this.renderer.domElement);
+    }
+
+    createLight() {
+        let light = new THREE.PointLight( 0xffffff, 2, 100 );
+        light.position.set( 0, 0, 10 );
+        light.castShadow = true; // default false
+
+        this.scene.add(light)
+    }
+
+    createFloor() {
+        let floorMaterial = new THREE.MeshPhongMaterial({ color:  0x969393})
+        let floorGeometry = new THREE.PlaneGeometry(1000, 1000)
+        let floorMesh = new THREE.Mesh(floorGeometry, floorMaterial)
+
+        floorMesh.rotation.x = -Math.PI / 2.0;
+        floorMesh.position.y = -3;
+        floorMesh.matrixAutoUpdate = false;
+        floorMesh.updateMatrix();
+
+        this.scene.add(floorMesh)
     }
 
     initGameLoop() {
@@ -72,6 +92,8 @@ export class LoopController {
 
     render(delta: number) {
         if (this.gamecontroller.debugMode) console.log("rendering")
+
+        // Here a cube could be rendered.
 
         this.renderer.render(this.scene, this.camera)
     }
