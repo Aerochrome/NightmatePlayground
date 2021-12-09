@@ -1,5 +1,6 @@
 import { InputState } from "./Interfaces/InputState";
 import { LoopController } from "./LoopController";
+import { PointerLockControls } from "./PointerLockControls";
 
 export class UserInputController {
     loopController: LoopController
@@ -16,9 +17,20 @@ export class UserInputController {
         'KeyS': 'down'
     }
 
+    pointerLockControls: PointerLockControls
+
     constructor(loopController: LoopController) {
         this.loopController = loopController;
         this.registerEventHandlers();
+    }
+
+    registerPointerLockControls() {
+        console.log("Initializing pointerlockcontrols")
+        this.pointerLockControls = new PointerLockControls(this.loopController.camera, document.body)
+
+        window.addEventListener("click", (event) => {
+            this.pointerLockControls.lock()
+        })
     }
 
     registerEventHandlers() {
