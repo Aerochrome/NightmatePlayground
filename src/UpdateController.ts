@@ -21,7 +21,7 @@ export class UpdateController {
 
             direction.y = 0
             console.log(direction)
-            this.loopController.camera.position.add(direction.multiplyScalar(0.2))
+            this.loopController.camera.position.add(direction.multiplyScalar(0.04))
         }
 
         if (this.loopController.userInputController.userInputState.down) {
@@ -30,7 +30,7 @@ export class UpdateController {
 
             direction.y = 0
             console.log(direction)
-            this.loopController.camera.position.add(direction.multiplyScalar(-0.2))
+            this.loopController.camera.position.add(direction.multiplyScalar(-0.04))
         }
     }
 }

@@ -6,7 +6,7 @@ import { PerspectiveCamera, Scene, WebGLRenderer } from 'three';
 
 export class LoopController {
 
-    readonly MS_PER_UPDATE: number = 33.33; // 30 FPS
+    readonly MS_PER_UPDATE: number = 16.66; // 30 FPS
 
     gamecontroller: GameController
     updateController: UpdateController
@@ -29,6 +29,7 @@ export class LoopController {
         this.initThree()
         this.createFloor()
         this.createLight()
+        this.createCube()
         this.initGameLoop()
 
         this.userInputController.registerPointerLockControls()
@@ -42,15 +43,44 @@ export class LoopController {
 
         this.renderer = new THREE.WebGLRenderer()
         this.renderer.setSize(window.innerWidth, window.innerHeight);
+        // this.renderer.shadowMap.enabled = true;
+        // this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
         document.body.appendChild(this.renderer.domElement);
     }
 
     createLight() {
         let light = new THREE.PointLight( 0xffffff, 2, 100 );
-        light.position.set( 0, 0, 10 );
+        light.position.set( 0, 5, 0 );
         light.castShadow = true; // default false
-
         this.scene.add(light)
+
+        let lHelper = new THREE.PointLightHelper(light)
+        this.scene.add(lHelper)
+
+        let ambient = new THREE.AmbientLight(0xffffff, 0.5)
+        this.scene.add(ambient)
+
+        // let dirLight = new THREE.DirectionalLight(0xffffff, 1)
+        // dirLight.position.set( -1, 0.75, 1 );
+        // dirLight.position.multiplyScalar( 50);
+        // dirLight.name = "dirlight";
+        // // dirLight.shadowCameraVisible = true;
+
+        // this.scene.add( dirLight );
+
+        // dirLight.castShadow = true;
+        // dirLight.shadow.map.width = dirLight.shadow.map.height = 1024*2;
+
+        // var d = 300;
+
+        // dirLight.shadow.camera.left = -d;
+        // dirLight.shadow.camera.right = d;
+        // dirLight.shadow.camera.top = d;
+        // dirLight.shadow.camera.bottom = -d;
+
+        // dirLight.shadow.camera.far = 3500;
+        // dirLight.shadow.bias = -0.0001;
     }
 
     createFloor() {
@@ -60,10 +90,19 @@ export class LoopController {
 
         floorMesh.rotation.x = -Math.PI / 2.0;
         floorMesh.position.y = -3;
+        floorMesh.receiveShadow = true
         floorMesh.matrixAutoUpdate = false;
         floorMesh.updateMatrix();
 
         this.scene.add(floorMesh)
+    }
+
+    createCube() {
+        let cubeMaterial = new THREE.MeshPhongMaterial({color: 0xffae00})
+        let cubeGeo = new THREE.BoxGeometry()
+        let cubeMesh = new THREE.Mesh(cubeGeo, cubeMaterial)
+        cubeMesh.position.z = 1
+        this.scene.add(cubeMesh)
     }
 
     initGameLoop() {
@@ -84,7 +123,7 @@ export class LoopController {
             this.lag -= this.MS_PER_UPDATE
         }
 
-        this.render(timestamp)
+        this.render()
 
         window.requestAnimationFrame((timestamp: number) => this.gameLoop(timestamp))
     }
@@ -94,7 +133,7 @@ export class LoopController {
         this.updateController.performUpdate();
     }
 
-    render(delta: number) {
+    render() {
         if (this.gamecontroller.debugMode) console.log("rendering")
 
         // Here a cube could be rendered.

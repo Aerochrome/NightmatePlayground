@@ -28,7 +28,7 @@ export class UserInputController {
         console.log("Initializing pointerlockcontrols")
         this.pointerLockControls = new PointerLockControls(this.loopController.camera, document.body)
 
-        window.addEventListener("click", (event) => {
+        window.addEventListener("click", () => {
             this.pointerLockControls.lock()
         })
     }
