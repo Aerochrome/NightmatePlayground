@@ -105,6 +105,25 @@ export class LoopController {
         this.scene.add(cubeMesh)
     }
 
+    createPlayerObject3d() {
+        let cubeMaterial = new THREE.MeshPhongMaterial({color: 0xffae00})
+        let cubeMaterialFront = new THREE.MeshPhongMaterial({color: 0x62cc3f})
+
+        let cubeGeo = new THREE.BoxGeometry(0.1, 0.2, 0.1)
+        let cubeMesh = new THREE.Mesh(cubeGeo, [
+            cubeMaterial,
+            cubeMaterial,
+            cubeMaterial,
+            cubeMaterial,
+            cubeMaterial,
+            cubeMaterialFront
+        ])
+
+        this.scene.add(cubeMesh)
+
+        return cubeMesh
+    }
+
     initGameLoop() {
         window.requestAnimationFrame((timestamp: number) => this.gameLoop(timestamp))
     }
