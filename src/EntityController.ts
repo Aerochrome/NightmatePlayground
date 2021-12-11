@@ -12,7 +12,6 @@ export class EntityController {
     networkEntities: networkEntities = {
     }
 
-
     constructor(gc: GameController) {
         this.gameController = gc
     }

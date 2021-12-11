@@ -4,6 +4,10 @@ import * as THREE from 'three'
 export class UpdateController {
     loopController: LoopController
 
+    positionUpdated: boolean = false
+    previousRotation: THREE.Vector3
+    previousPosition: THREE.Vector3 = new THREE.Vector3()
+
     constructor(loopController: LoopController) {
         this.loopController = loopController;
     }
@@ -31,10 +35,26 @@ export class UpdateController {
             direction.y = 0
             this.loopController.camera.position.add(direction.multiplyScalar(-0.04))
         }
+
+        let rotVector = this.loopController.camera.rotation.toVector3()
+        if(this.previousRotation !== undefined && (!this.previousRotation.equals(rotVector))) {
+            this.positionUpdated = true
+        }
+        this.previousRotation = rotVector
+
+        let position = this.loopController.camera.position
+        if (this.previousPosition !== undefined && (!this.previousPosition.equals(position))) {
+            this.positionUpdated = true
+        }
+        this.previousPosition.copy(position)
     }
 
-    updateNetworkPosition() {
+    updateNetworkPosition(forced: boolean = false) {
         if(!this.isConnected()) {
+            return
+        }
+
+        if (!this.positionUpdated && !forced) {
             return
         }
 
@@ -46,6 +66,7 @@ export class UpdateController {
         direction = this.loopController.camera.rotation.toVector3()
 
         socket.emit('localPlayerLocationUpdate', position, direction)
+        this.positionUpdated = false
     }
 
     isConnected() {

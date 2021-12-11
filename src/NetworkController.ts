@@ -18,6 +18,16 @@ export class NetworkController {
 
         this.io.on('connect', () => {
             console.log('connected!')
+
+            // Make sure that at least one update is pushed to the server
+            this.gameController.loopController.updateController.updateNetworkPosition(true)
+        })
+
+        this.io.on('reconnect', () => {
+            console.log('reconnected!')
+
+            // Make sure that at least one update is pushed to the server
+            this.gameController.loopController.updateController.updateNetworkPosition(true)
         })
     }
 
@@ -37,8 +47,6 @@ export class NetworkController {
         })
 
         this.io.on('playerLocationUpdate', (id: string, pos, dir) => {
-            console.log(this.gameController.entityController.networkEntities)
-            console.log(id)
             let entity = this.gameController.entityController.networkEntities[id]
 
             if (entity === undefined) {
