@@ -3,6 +3,7 @@ import { UpdateController } from './UpdateController';
 import { UserInputController } from './UserInputController';
 import * as THREE from 'three'
 import { PerspectiveCamera, Scene, WebGLRenderer } from 'three';
+import { GLTFLoader } from './GLTFLoader';
 
 export class LoopController {
 
@@ -21,6 +22,9 @@ export class LoopController {
     elapsed: number
     lag: number = 0.0
 
+    clock: THREE.Clock
+    mixer: THREE.AnimationMixer
+
     constructor(gamecontroller: GameController) {
         this.gamecontroller = gamecontroller
         this.updateController = new UpdateController(this);
@@ -29,7 +33,8 @@ export class LoopController {
         this.initThree()
         this.createFloor()
         this.createLight()
-        this.createCube()
+        //this.createCube()
+        this.loadChristmasTree()
         this.initGameLoop()
 
         this.userInputController.registerPointerLockControls()
@@ -46,12 +51,13 @@ export class LoopController {
         // this.renderer.shadowMap.enabled = true;
         // this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
+        this.clock = new THREE.Clock();
         document.body.appendChild(this.renderer.domElement);
     }
 
     createLight() {
         let light = new THREE.PointLight( 0xffffff, 2, 100 );
-        light.position.set( 0, 5, 0 );
+        light.position.set( 0, 2, 0 );
         light.castShadow = true; // default false
         this.scene.add(light)
 
@@ -105,6 +111,34 @@ export class LoopController {
         this.scene.add(cubeMesh)
     }
 
+    loadChristmasTree() {
+        const loader = new GLTFLoader();
+
+        let scene = this.scene
+        let that = this
+
+        loader.load('/models/merry_christmas/scene.gltf', function (gltf:any) {
+            gltf.scene.scale.set(0.005, 0.005, 0.005)
+            gltf.scene.position.y = -1
+            gltf.scene.position.z = 3
+            gltf.scene.rotation.set(0, Math.PI, 0)
+
+            that.mixer = new THREE.AnimationMixer(gltf.scene)
+            /*gltf.animations.forEach( ( clip:any ) => {
+                that.mixer.clipAction( clip ).play()
+            } );*/
+
+            that.mixer.clipAction(gltf.animations[0]).play()
+            
+            scene.add( gltf.scene );
+        
+        }, undefined, function ( error:any ) {
+        
+            console.error( error );
+        
+        } );
+    }
+
     createPlayerObject3d() {
         let cubeMaterial = new THREE.MeshPhongMaterial({color: 0xffae00})
         let cubeMaterialFront = new THREE.MeshPhongMaterial({color: 0x62cc3f})
@@ -141,6 +175,9 @@ export class LoopController {
             this.update()
             this.lag -= this.MS_PER_UPDATE
         }
+
+        let delta = this.clock.getDelta()
+        if (this.mixer) this.mixer.update(delta)
 
         this.render()
 
